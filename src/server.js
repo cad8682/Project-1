@@ -11,22 +11,22 @@ const handlePost = async (request, response, parsedUrl) => {
   const body = await parseBody(request);
   request.body = body;
   if (parsedUrl.pathname === '/addUser') {
-    jsonHandler.addUser(request, response);
+    //jsonHandler.addUser(request, response);
   }
 };
 
 const handleGet = (request, response, parsedUrl) => {
   if (parsedUrl.pathname === '/style.css') {
-    //htmlHandler.getCSS(request, response);
+    htmlHandler.getCSS(request, response);
   } else if (parsedUrl.pathname === '/getUsers') {
     //jsonHandler.getUsers(request, response);
   } else if (parsedUrl.pathname === '/') {
-    //htmlHandler.getIndex(request, response);
+    htmlHandler.getIndex(request, response);
   } else if (parsedUrl.pathname === '/addUser') {
     //jsonHandler.addUser(request, response);
   }
   else {
-    jsonHandler.notFound(request, response);
+    //jsonHandler.notFound(request, response);
   }
 };
 

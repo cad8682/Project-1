@@ -5,7 +5,6 @@
   <link rel="stylesheet" type="text/css" href="/style.css">
   
   <script>
-    /*
     //Handles our FETCH response. This function is async because it
     //contains an await.
     const handleResponse = async (response) => {
@@ -15,131 +14,172 @@
 
       //Based on the status code, display something
       switch(response.status) {
-        case 200: //success
+        case 200: // Success
           content.innerHTML = `<b>Success</b>`;
           break;
-        case 201: //created
+        case 201: // Created
           content.innerHTML = '<b>Created</b>';
           break;
-        case 204: //updated (no response back from server)
+        case 204: // Updated (no response back from server)
           content.innerHTML = '<b>Updated (No Content)</b>';
+          break;
           return;
-        case 400: //bad request
+        case 400: // Bad request
           content.innerHTML = `<b>Bad Request</b>`;
           break;
-        default: //any other status code
-          content.innerHTML = `Error code not implemented by client.`;
+        case 401: // Unauthorized
+          content.innerHTML = `<b>Unauthorized</b>`;
+          break;
+        case 403: //Forbidden
+          content.innerHTML = `<b>Forbidden</b>`;
+          break;
+        case 500: //Internal error
+          content.innerHTML = `<b>Internal</b>`;
+          break;
+        case 501: //Not implemented
+          content.innerHTML = `<b>Not Implemented</b>`;
+          break;
+        default : //404 not found
+          content.innerHTML = `<b>Resource Not Found</b>`;
           break;
       }
 
       //Parse the response to json. This works because we know the server always
       //sends back json. Await because .json() is an async function.
-      const obj = await response.json();
-      
+      let obj = {};
+      console.log(response.method);
+      if (response.status !== 204 && method !== 'HEAD') {
+        obj = await response.json();
+      }
+
       //If we have a message, display it.
-      if(obj.message){
+      console.log(obj);
+      if (obj.message) {
         content.innerHTML += `<p>${obj.message}</p>`;
       }
-    };
-
-    //Uses fetch to send a postRequest. Marksed as async because we use await
-    //within it.
-    const sendPost = async (nameForm) => {
-      //Grab all the info from the form
-      const url = nameForm.getAttribute('action');
-      const method = nameForm.getAttribute('method');
-      
-      const nameField = nameForm.querySelector('#nameField');
-      const ageField = nameForm.querySelector('#ageField');
-
-      //Build a data string in the FORM-URLENCODED format.
-      const formData = `name=${nameField.value}&age=${ageField.value}`;
-
-      //Make a fetch request and await a response. Set the method to
-      //the one provided by the form (POST). Set the headers. Content-Type
-      //is the type of data we are sending. Accept is the data we would like
-      //in response. Then add our FORM-URLENCODED string as the body of the request.
-      let response = await fetch(url, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Accept': 'application/json',
-        },
-        body: formData,
-      });
-
-      //Once we have a response, handle it.
-      handleResponse(response);
-    };
+      //If there's an id, display it
+      if (obj.id) {
+        content.innerHTML += `<p>${obj.id}</p>`;
+      }
+      //If there's a user added, display it
+      //if (obj.user) {
+        //content.innerHTML += `<p>${JSON.stringify(obj.user)}</p>`;
+      //}
+      //If there are multiple users called, display them
+      //if (obj.users) {
+        //content.innerHTML += `<p>${JSON.stringify(obj.users)}</p>`;
+      //}
+    }
 
     //Init function is called when window.onload runs (set below).
     const init = () => {
-      //Grab the form
-      const nameForm = document.querySelector('#nameForm');
-      
-      //Create an addUser function that cancels the forms default action and
-      //calls our sendPost function above.
-      const addUser = (e) => {
+      const nameSelector = document.querySelector('#nameField');
+      const numberSelector = document.querySelector('#numberField');
+      const typeOneSelector = document.querySelector('#tyepOneField');
+      const typeTwoSelector = document.querySelector('#tyepTwoField');
+      const wMinSelector = document.querySelector('#wMinField');
+      const wMaxSelector = document.querySelector('#wMaxField');
+      const hMinSelector = document.querySelector('#hMinField');
+      const hMaxSelector = document.querySelector('#hMaxField');
+      const weaknessSelector = document.querySelector('#weaknessField');
+
+      const addMonButton = document.querySelector('#addMon');
+      const getMonButton = document.querySelector('#getMon');
+      //const getURLField = document.querySelector('#urlField');
+      const getMethodSelect = document.querySelector('#methodSelect');
+
+      const searchDexUrl = document.querySelector('#searchPokedexForm');
+      console.log(searchDexUrl.method);
+
+      //Handles the post call to make a user
+      const onSubmitAdd = async (e) => {
         e.preventDefault();
-        sendPost(nameForm);
-        return false;
+        const formData = `name=${nameField.value}&number=${numberField.value}&type1=${typeOne.value}&type2=${typeTwoField.value}&weightMin=${wMinField.value}&weightMax=${wMaxField.value}&heightMin=${hMinField.value}&heightMax=${hMaxField.value}&weakness=${weaknessField.value}`;
+        let response = await fetch('/addMon', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json',
+          },
+          body: formData
+        });
+        handleResponse(response, getMethodSelect.value);
       }
-      
-      //Call addUser when the submit event fires on the form.
-      nameForm.addEventListener('submit', addUser);
+
+      //Handles the get users call handle the get / head requests
+      const onSubmitGet = async (e) => {
+        e.preventDefault();
+        let response = await fetch(getURLField.value, {
+          method: getMethodSelect.value,
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Accept': 'application/json',
+          }
+        });
+        handleResponse(response, getMethodSelect.value);
+      }
+
+      //Call onSubmit when the submit event fires on the form.
+      addMonButton.addEventListener('click', onSubmitAdd);
+      getMonButton.addEventListener('click', onSubmitGet);
     };
 
     //When the window loads, run init.
-    window.onload = init;*/
+    window.onload = init;
   </script>
 </head>
 <body>
     <!--searchPokedex-->
     <div class="endpoint">
         <h2>/api/searchPokedex</h2>
-        <form>
+        <form id="searchPokedexForm" action="/searchPokedex" method="get">
             <label>
                 Name: 
-                <input type="text" name = "name">
+                <input id="nameField" type="text" name = "name">
             </label>
             <label>
                 Number: 
-                <input type="number" name = "number">
+                <input id="numberField" type="number" name = "number">
             </label>
             <label>
                 Type 1: 
-                <input type="text" name = "type1">
+                <input id="typeOneField" type="text" name = "type1">
             </label>
             <label>
                 Type 2: 
-                <input type="text" name = "type2">
+                <input id="typeTwoField" type="text" name = "type2">
             </label>
             <label>
                 Weight Minimum: 
-                <input type="text" name = "weightMin">
+                <input id="wMinField" type="text" name = "weightMin">
             </label>
             <label>
                 Weight Maximum: 
-                <input type="text" name = "weightMax">
+                <input id="wMaxField" type="text" name = "weightMax">
             </label>
             <label>
                 Height Minimum: 
-                <input type="text" name = "heightMin">
+                <input id="hMinField" type="text" name = "heightMin">
             </label>
             <label>
                 Height Maximum: 
-                <input type="text" name = "heightMax">
+                <input id="hMaxField" type="text" name = "heightMax">
             </label>
             <label>
                 Weakness: 
-                <input type="text" name = "weakness">
+                <input id="weaknessField" type="text" name = "weakness">
             </label>
+            <select id="methodSelect">
+                <option value="GET">GET</option>
+                <option value="HEAD">HEAD</option>
+            </select>
+            <input id="getMon" type="submit" value="Get Pokemon" />
         </form>
     </div>
     <!--getType-->
     <div class="endpoint">
         <h2>/api/getTypes</h2> <!-- Just one? -->
-        <form>
+        <form id="getTypesForm" action="/getTypes" method="get">
             <label>
                 Type 1: 
                 <input type="text" name = "type1">
@@ -148,6 +188,11 @@
                 Type 2: 
                 <input type="text" name = "type2">
             </label>
+            <select id="methodSelect">
+                <option value="GET">GET</option>
+                <option value="HEAD">HEAD</option>
+            </select>
+            <input id="getMon" type="submit" value="Get Pokemon" />
         </form>
     </div>
     <!--getShiny-->
@@ -206,8 +251,8 @@
             </label>
         </form>
     </div>
-    <!--getRandom-->
-    <div class="endpoint">
+     <!--getRandom-->
+     <div class="endpoint">
         <h2>/api/getRandom</h2>
         <form>
             <label>
@@ -219,7 +264,7 @@
     <!--addPokemon-->
     <div class="endpoint">
         <h2>/api/addPokemon</h2>
-        <form>
+        <form id="addPokemonForm" action="/addPokemon" method="post">
             <label>
                 Name: 
                 <input type="text" name = "name">
@@ -249,9 +294,10 @@
                 Weakness: 
                 <input type="text" name = "weakness">
             </label>
+            <input id="addMon" type="submit" value="Add Pokemon" />
         </form>
     </div>
-    <!--removePokemon-->
+    <!--removePokemon--> <!--Necessary? Yay Nay??? -->
     <div class="endpoint">
         <h2>/api/removePokemon</h2>
         <form>
@@ -261,5 +307,8 @@
             </label>
         </form>
     </div>
+</section>
+<section id="content">
+</section>
 </body>
 </html>

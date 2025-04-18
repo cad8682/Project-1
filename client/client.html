@@ -7,7 +7,7 @@
   <script>
     //Handles our FETCH response. This function is async because it
     //contains an await.
-    const handleResponse = async (response) => {
+    const handleResponse = async (response, methodValue) => {
       
       //Grab the content section
       const content = document.querySelector('#content');
@@ -27,17 +27,8 @@
         case 400: // Bad request
           content.innerHTML = `<b>Bad Request</b>`;
           break;
-        case 401: // Unauthorized
-          content.innerHTML = `<b>Unauthorized</b>`;
-          break;
-        case 403: //Forbidden
-          content.innerHTML = `<b>Forbidden</b>`;
-          break;
         case 500: //Internal error
           content.innerHTML = `<b>Internal</b>`;
-          break;
-        case 501: //Not implemented
-          content.innerHTML = `<b>Not Implemented</b>`;
           break;
         default : //404 not found
           content.innerHTML = `<b>Resource Not Found</b>`;
@@ -47,8 +38,10 @@
       //Parse the response to json. This works because we know the server always
       //sends back json. Await because .json() is an async function.
       let obj = {};
-      console.log(response.method);
-      if (response.status !== 204 && method !== 'HEAD') {
+      //console.log(response.method);
+      //console.log(methodValue);
+      //Something weird's happening here
+      if (response.status !== 204 && methodValue !== 'HEAD') {
         obj = await response.json();
       }
 
@@ -61,9 +54,9 @@
       if (obj.id) {
         content.innerHTML += `<p>${obj.id}</p>`;
       }
-      //If there's a user added, display it
-      //if (obj.user) {
-        //content.innerHTML += `<p>${JSON.stringify(obj.user)}</p>`;
+      //If there's a new Pokemon added, display it
+      //if (obj.newMon) {
+        //content.innerHTML += `<p>${JSON.stringify(obj.newMon)}</p>`;
       //}
       //If there are multiple users called, display them
       //if (obj.users) {
@@ -75,8 +68,8 @@
     const init = () => {
       const nameSelector = document.querySelector('#nameField');
       const numberSelector = document.querySelector('#numberField');
-      const typeOneSelector = document.querySelector('#tyepOneField');
-      const typeTwoSelector = document.querySelector('#tyepTwoField');
+      const typeOneSelector = document.querySelector('#typepOneField');
+      const typeTwoSelector = document.querySelector('#typeTwoField');
       const wMinSelector = document.querySelector('#wMinField');
       const wMaxSelector = document.querySelector('#wMaxField');
       const hMinSelector = document.querySelector('#hMinField');
@@ -84,17 +77,14 @@
       const weaknessSelector = document.querySelector('#weaknessField');
 
       const addMonButton = document.querySelector('#addMon');
-      const getMonButton = document.querySelector('#getMon');
-      //const getURLField = document.querySelector('#urlField');
+      const getButton = document.querySelector('#getMons');
+      const getURLSelect = document.querySelector('#urlSelect');
       const getMethodSelect = document.querySelector('#methodSelect');
 
-      const searchDexUrl = document.querySelector('#searchPokedexForm');
-      console.log(searchDexUrl.method);
-
-      //Handles the post call to make a user
+      //Handles the post call to make a Pomemon
       const onSubmitAdd = async (e) => {
         e.preventDefault();
-        const formData = `name=${nameField.value}&number=${numberField.value}&type1=${typeOne.value}&type2=${typeTwoField.value}&weightMin=${wMinField.value}&weightMax=${wMaxField.value}&heightMin=${hMinField.value}&heightMax=${hMaxField.value}&weakness=${weaknessField.value}`;
+        const formData = `name=${nameField.value}&number=${numberField.value}&type1=${typeOneField.value}&type2=${typeTwoField.value}&weightMin=${wMinField.value}&weightMax=${wMaxField.value}&heightMin=${hMinField.value}&heightMax=${hMaxField.value}&weakness=${weaknessField.value}`;
         let response = await fetch('/addMon', {
           method: 'POST',
           headers: {
@@ -109,10 +99,11 @@
       //Handles the get users call handle the get / head requests
       const onSubmitGet = async (e) => {
         e.preventDefault();
-        let response = await fetch(getURLField.value, {
+        //If a spot is empty, error is thrown
+        const formData = `?name=${nameField.value}&number=${numberField.value}&type1=${typeOneField.value}&type2=${typeTwoField.value}&weightMin=${wMinField.value}&weightMax=${wMaxField.value}&heightMin=${hMinField.value}&heightMax=${hMaxField.value}&weakness=${weaknessField.value}`;
+        let response = await fetch(getURLSelect.value + formData, {
           method: getMethodSelect.value,
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
             'Accept': 'application/json',
           }
         });
@@ -121,7 +112,7 @@
 
       //Call onSubmit when the submit event fires on the form.
       addMonButton.addEventListener('click', onSubmitAdd);
-      getMonButton.addEventListener('click', onSubmitGet);
+      getButton.addEventListener('click', onSubmitGet);
     };
 
     //When the window loads, run init.
@@ -131,8 +122,8 @@
 <body>
     <!--searchPokedex-->
     <div class="endpoint">
-        <h2>/api/searchPokedex</h2>
-        <form id="searchPokedexForm" action="/searchPokedex" method="get">
+        <h2>Pokedex API - Please use the url select dropdown to switch functions and the Number field to search through the dex and generate a random numbert of Pokemon</h2>
+        <form id="PokemonAPIForm">
             <label>
                 Name: 
                 <input id="nameField" type="text" name = "name">
@@ -169,16 +160,30 @@
                 Weakness: 
                 <input id="weaknessField" type="text" name = "weakness">
             </label>
+            <label>
+                URL Select: 
+            <select id="urlSelect">
+                <option value="/searchPokedex">/searchPokemon</option>
+                <option value="/getTypes">/getTypes</option>
+                <option value="/addPokemon">/addPokemon</option>
+                <option value="/getRandom">/getRandom</option>
+            </select>
+            </label>
+            <label>
+                Method Select: 
             <select id="methodSelect">
                 <option value="GET">GET</option>
                 <option value="HEAD">HEAD</option>
+                <option value="POST">POST</option>
             </select>
-            <input id="getMon" type="submit" value="Get Pokemon" />
+            </label>
+            <input id="getMons" type="submit" value="Get Pokemon" />
+            <input id="addMon" type="submit" value="Add Pokemon" />
         </form>
     </div>
-    <!--getType-->
+    <!--getType--> <!--
     <div class="endpoint">
-        <h2>/api/getTypes</h2> <!-- Just one? -->
+        <h2>/api/getTypes</h2> <!-- Just one?
         <form id="getTypesForm" action="/getTypes" method="get">
             <label>
                 Type 1: 
@@ -194,11 +199,11 @@
             </select>
             <input id="getMon" type="submit" value="Get Pokemon" />
         </form>
-    </div>
-    <!--getShiny-->
+    </div> -->
+    <!--getShiny--> <!--
     <div class="endpoint">
         <h2>/api/getShiny</h2>
-        <form> <!-- Just one? -->
+        <form> <!-- Just one?
             <label>
                 Name: 
                 <input type="text" name = "name">
@@ -208,11 +213,11 @@
                 <input type="number" name = "number">
             </label>
         </form>
-    </div>
-    <!--getCostumes-->
+    </div> -->
+    <!--getCostumes--> <!--
     <div class="endpoint">
         <h2>/api/getCostumes</h2>
-        <form> <!-- Just one? -->
+        <form> <!-- Just one?
             <label>
                 Name: 
                 <input type="text" name = "name">
@@ -222,11 +227,11 @@
                 <input type="number" name = "number">
             </label>
         </form>
-    </div>
-    <!--getMegas-->
+    </div> -->
+    <!--getMegas--> <!--
     <div class="endpoint">
         <h2>/api/getMegas</h2>
-        <form> <!-- Just one? -->
+        <form> <!-- Just one?
             <label>
                 Name: 
                 <input type="text" name = "name">
@@ -236,11 +241,11 @@
                 <input type="number" name = "number">
             </label>
         </form>
-    </div>
-    <!--getGigantamax-->
+    </div> -->
+    <!--getGigantamax--> <!--
     <div class="endpoint">
         <h2>/api/getGigantamax</h2>
-        <form> <!-- Just one? -->
+        <form> <!-- Just one?
             <label>
                 Name: 
                 <input type="text" name = "name">
@@ -250,8 +255,8 @@
                 <input type="number" name = "number">
             </label>
         </form>
-    </div>
-     <!--getRandom-->
+    </div> -->
+     <!--getRandom--> <!--
      <div class="endpoint">
         <h2>/api/getRandom</h2>
         <form>
@@ -260,8 +265,8 @@
                 <input type="number" name = "number">
             </label>
         </form>
-    </div>
-    <!--addPokemon-->
+    </div> -->
+    <!--addPokemon--> <!--
     <div class="endpoint">
         <h2>/api/addPokemon</h2>
         <form id="addPokemonForm" action="/addPokemon" method="post">
@@ -289,15 +294,15 @@
                 Height: 
                 <input type="text" name = "height">
             </label>
-            <!-- Unknown number of weaknesses -->
+            <!-- Unknown number of weaknesses
             <label>
                 Weakness: 
                 <input type="text" name = "weakness">
             </label>
             <input id="addMon" type="submit" value="Add Pokemon" />
         </form>
-    </div>
-    <!--removePokemon--> <!--Necessary? Yay Nay??? -->
+    </div> -->
+    <!--removePokemon--> <!--Necessary? Yay Nay??? --> <!--
     <div class="endpoint">
         <h2>/api/removePokemon</h2>
         <form>
@@ -307,7 +312,7 @@
             </label>
         </form>
     </div>
-</section>
+</section> -->
 <section id="content">
 </section>
 </body>

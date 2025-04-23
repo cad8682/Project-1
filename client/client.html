@@ -85,7 +85,7 @@
       const onSubmitAdd = async (e) => {
         e.preventDefault();
         const formData = `name=${nameField.value}&number=${numberField.value}&type1=${typeOneField.value}&type2=${typeTwoField.value}&weightMin=${wMinField.value}&weightMax=${wMaxField.value}&heightMin=${hMinField.value}&heightMax=${hMaxField.value}&weakness=${weaknessField.value}`;
-        let response = await fetch('/addMon', {
+        let response = await fetch('/addPokemon', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -181,138 +181,6 @@
             <input id="addMon" type="submit" value="Add Pokemon" />
         </form>
     </div>
-    <!--getType--> <!--
-    <div class="endpoint">
-        <h2>/api/getTypes</h2> <!-- Just one?
-        <form id="getTypesForm" action="/getTypes" method="get">
-            <label>
-                Type 1: 
-                <input type="text" name = "type1">
-            </label>
-            <label>
-                Type 2: 
-                <input type="text" name = "type2">
-            </label>
-            <select id="methodSelect">
-                <option value="GET">GET</option>
-                <option value="HEAD">HEAD</option>
-            </select>
-            <input id="getMon" type="submit" value="Get Pokemon" />
-        </form>
-    </div> -->
-    <!--getShiny--> <!--
-    <div class="endpoint">
-        <h2>/api/getShiny</h2>
-        <form> <!-- Just one?
-            <label>
-                Name: 
-                <input type="text" name = "name">
-            </label>
-            <label>
-                Number: 
-                <input type="number" name = "number">
-            </label>
-        </form>
-    </div> -->
-    <!--getCostumes--> <!--
-    <div class="endpoint">
-        <h2>/api/getCostumes</h2>
-        <form> <!-- Just one?
-            <label>
-                Name: 
-                <input type="text" name = "name">
-            </label>
-            <label>
-                Number: 
-                <input type="number" name = "number">
-            </label>
-        </form>
-    </div> -->
-    <!--getMegas--> <!--
-    <div class="endpoint">
-        <h2>/api/getMegas</h2>
-        <form> <!-- Just one?
-            <label>
-                Name: 
-                <input type="text" name = "name">
-            </label>
-            <label>
-                Number: 
-                <input type="number" name = "number">
-            </label>
-        </form>
-    </div> -->
-    <!--getGigantamax--> <!--
-    <div class="endpoint">
-        <h2>/api/getGigantamax</h2>
-        <form> <!-- Just one?
-            <label>
-                Name: 
-                <input type="text" name = "name">
-            </label>
-            <label>
-                Number: 
-                <input type="number" name = "number">
-            </label>
-        </form>
-    </div> -->
-     <!--getRandom--> <!--
-     <div class="endpoint">
-        <h2>/api/getRandom</h2>
-        <form>
-            <label>
-                Number: 
-                <input type="number" name = "number">
-            </label>
-        </form>
-    </div> -->
-    <!--addPokemon--> <!--
-    <div class="endpoint">
-        <h2>/api/addPokemon</h2>
-        <form id="addPokemonForm" action="/addPokemon" method="post">
-            <label>
-                Name: 
-                <input type="text" name = "name">
-            </label>
-            <label>
-                Number: 
-                <input type="number" name = "number">
-            </label>
-            <label>
-                Type 1: 
-                <input type="text" name = "type1">
-            </label>
-            <label>
-                Type 2: 
-                <input type="text" name = "type2">
-            </label>
-            <label>
-                Weight: 
-                <input type="text" name = "weight">
-            </label>
-            <label>
-                Height: 
-                <input type="text" name = "height">
-            </label>
-            <!-- Unknown number of weaknesses
-            <label>
-                Weakness: 
-                <input type="text" name = "weakness">
-            </label>
-            <input id="addMon" type="submit" value="Add Pokemon" />
-        </form>
-    </div> -->
-    <!--removePokemon--> <!--Necessary? Yay Nay??? --> <!--
-    <div class="endpoint">
-        <h2>/api/removePokemon</h2>
-        <form>
-            <label>
-                Number: 
-                <input type="number" name = "number">
-            </label>
-        </form>
-    </div>
-</section> -->
 <section id="content">
 </section>
 </body>

@@ -61,25 +61,25 @@ const searchPokedex = (request, response) => {
     // filter by minimum weight The JSON has kgs and ms attached to the heights and weights
     if (request.query.weightMin) {
         data = data.filter(pokeman => {
-            return pokeman.weight >= Number(request.query.weightMin);
+            return parseFloat(pokeman.weight) >= Number(request.query.weightMin);
         });
     }
     // filter by maximum weight
     if (request.query.weightMax) {
         data = data.filter(pokeman => {
-            return pokeman.weight <= Number(request.query.weightMax);
+            return parseFloat(pokeman.weight) <= Number(request.query.weightMax);
         });
     }
     // filter by minimum height
     if (request.query.heightMin) {
         data = data.filter(pokeman => {
-            return pokeman.height >= Number(request.query.heightMin);
+            return parseFloat(pokeman.height) >= Number(request.query.heightMin);
         });
     }
     // filter by maximum height
     if (request.query.heightMax) {
         data = data.filter(pokeman => {
-            return pokeman.height <= Number(request.query.heightMax);
+            return parseFloat(pokeman.height) <= Number(request.query.heightMax);
         });
     }
     // filter by given weakness
@@ -111,7 +111,7 @@ const getTypes = (request, response) => {
         return;
     }
 
-    if (request.data.type1 || request.data.type2) {
+    if (request.query.type1 || request.query.type2) {
         // filter by type one
         if (request.query.type1) {
             data = data.filter(pokeman => {
@@ -143,12 +143,12 @@ const getTypes = (request, response) => {
 const addPokemon = (request, response) => {
     let newPokemon;
     const responseJSON = {
-      message: 'All fields are required.',
+      message: 'All fields are required (except Type 2).',
     };
-  
+    debugger
     const { name, number, typeOne, typeTwo, weightMin, weightMax, heightMin, heightMax, weakness } = request.body;
-  
-    if (!name || !number || !typeOne || !typeTwo || !weightMin || !weightMax || !heightMin || !heightMax || !weakness) {
+    console.log(request.body);
+    if (!name || !number || !typeOne || !weightMin || !weightMax || !heightMin || !heightMax || !weakness) {
       responseJSON.id = 'missingParams';
       return respondJSON(request, response, 400, responseJSON);
     }

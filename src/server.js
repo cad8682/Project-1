@@ -28,7 +28,7 @@ const parseBody = (request, response, handler) => {
 // handle POST requests
 const handlePost = (request, response, parsedUrl) => {
   if (parsedUrl.pathname === '/addPokemon') {
-    parseBody(request, response, jsonHandler.addPokemon(request, response));
+    parseBody(request, response, jsonHandler.addPokemon);
   }
 };
 

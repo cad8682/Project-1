@@ -146,13 +146,13 @@ const addPokemon = (request, response) => {
       message: 'All fields are required (except Type 2).',
     };
     debugger
-    const { name, number, typeOne, typeTwo, weightMin, weightMax, heightMin, heightMax, weakness } = request.body;
+    const { name, number, type1, type2, weightMin, weightMax, heightMin, heightMax, weakness } = request.body;
     console.log(request.body);
-    if (!name || !number || !typeOne || !weightMin || !weightMax || !heightMin || !heightMax || !weakness) {
+    if (!name || !number || !type1 || !weightMin || !weightMax || !heightMin || !heightMax || !weakness) {
       responseJSON.id = 'missingParams';
       return respondJSON(request, response, 400, responseJSON);
     }
-    
+    newPokemon = request.body;
     let data;
     try {
         data = fs.readFileSync('./data/pokedex.json', 'utf8');
@@ -177,8 +177,8 @@ const addPokemon = (request, response) => {
     }
     
     newPokemon[name].number = number;
-    newPokemon[name].typeOne = typeOne;
-    newPokemon[name].typeTwo = typeTwo;
+    newPokemon[name].typeOne = type1;
+    newPokemon[name].typeTwo = type2;
     newPokemon[name].weightMin = weightMin;
     newPokemon[name].weightMax = weightMax;
     newPokemon[name].heightMin = heightMin;
@@ -188,8 +188,7 @@ const addPokemon = (request, response) => {
     data.push(newPokemon);
 
     try {
-        data = fs.writeFileSync('./data/pokedex.json', 'utf8');
-        data = JSON.parse(data);
+        fs.writeFileSync('./data/pokedex.json', JSON.stringify(data), 'utf8');
     } catch (err) {
         console.error(err);
         const responseData = {
@@ -200,7 +199,6 @@ const addPokemon = (request, response) => {
         return;
     }
 
-    //What's going on over here??
     if (responseCode === 201) {
       responseJSON.message = 'Created Successfully';
       responseJSON.newMon = newPokemon[name];
